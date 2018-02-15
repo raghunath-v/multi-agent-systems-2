@@ -1,0 +1,9 @@
+{
+	"env_name": "P21",
+	"mdl_name": "kinematic_point",
+	"delta_q": 1.0,
+	"k": 4000,
+	"rrt_strategy": 0,
+	"iterations": 7,
+	"N": 2
+}
