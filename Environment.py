@@ -7,7 +7,7 @@ from KinematicPoint import KinematicPoint
 from Obstacle import Obstacle
 from RRT import RRT
 from BoundingArea import BoundingArea
-
+import numpy as np
 
 class Environment:
     '''
@@ -31,6 +31,9 @@ class Environment:
         #    raise ValueError('Number of Players and Goals are not same')
         self.rrt = None
         self.quick_draw = quick_draw
+        self.allFinished = False
+        self.N = len(self.players)
+        self.finishedPlayers = 0
 
 
 
@@ -45,45 +48,60 @@ class Environment:
         self.gen_rrt(rrt_setup)
         player.set_velocity(goal)
         player.set_graphicals()
+        self.win.getMouse()
         #self.win.getMouse()
-        #self.win.close()
+        #self.win.close()209
         #return player.total_time
 
     def run(self, rrt_setup):
-        for idx in range(len(self.players))
-            self.init_draw()
-            self.gen_rrt(rrt_setup)
+        self.init_draw()
+        while not self.allFinished:
+            self.finishedPlayers = self.N
+            for idx in range(len(self.players)):
+                self.gen_rrt(rrt_setup)
                 if not players[idx].finished:
                     self.simulate(rrt_setup, self.players[idx], self.goals[idx], idx)
-            self.player.set_graphicals()
-            print("Is finshed")
-            print("Position:")
-            print("goal: ", self.goal.pos_x, ",", self.goal.pos_y)
-            print("player: ", self.player.pos_x, ",", self.player.pos_y)
-            print("Velocity:")
-            print("goal: ", self.goal.vel_x, ",", self.goal.vel_y)
-            if isinstance(self.player, DynamicPoint):
-                print("player: ", self.player.current_vel[0], ",", self.player.current_vel[1])
-            else:
-                print("player: ", self.player.vel_x, ",", self.player.vel_y)
-            print("Time taken to reach goal (sec): ", player.total_time)
+                    self.finishedPlayers -= 1
+                if self.finishedPlayers == 0:
+                    self.allFinished = True
+            #self.player.set_graphicals()
+            #print("Is finshed")
+            #print("Position:")
+            #print("goal: ", self.goal.pos_x, ",", self.goal.pos_y)
+            #print("player: ", self.player.pos_x, ",", self.player.pos_y)
+            #print("Velocity:")
+            #print("goal: ", self.goal.vel_x, ",", self.goal.vel_y)
+            #if isinstance(self.player, DynamicPoint):
+            #    print("player: ", self.player.current_vel[0], ",", self.player.current_vel[1])
+            #else:
+            #    print("player: ", self.player.vel_x, ",", self.player.vel_y)
+            #print("Time taken to reach goal (sec): ", player.total_time)
             # comment line below to record time
-            self.win.getMouse()
-            self.win.close()
-        return player.total_time
-
-
+        self.win.getMouse()
+        self.win.close()
+        #return player.total_time
+        return 1
 
     def init_draw(self):
         # draw everything initially
         self.bounding_area.set_graphicals()
         for obs in self.obstacles:
             obs.set_graphicals()
-        self.player.set_graphicals()
-        self.goal.set_graphicals()
+        for idx in range(len(self.players)):
+            self.players[idx].set_graphicals()
+            self.goals[idx].set_graphicals()
 
 
 if __name__ == "__main__":
+
+    # Parse problem strategy
+    with open("Problem1/current_strategy.json") as json_file:
+        curr_strat = json.load(json_file)
+    env_name = curr_strat['env_name']
+    mdl_name = curr_strat['mdl_name']
+    delta_q = curr_strat['delta_q']
+    k = curr_strat['k']
+    rrt_strat = curr_strat['rrt_strategy']
 
     # Parse problem setup
     with open("Problem1/" + str(env_name) + ".json") as json_file:
@@ -98,15 +116,6 @@ if __name__ == "__main__":
     omega_max = desc['vehicle_omega_max']
     phi_max = desc['vehicle_phi_max']
     vehicle_length = desc['vehicle_L']
-
-    # Parse problem strategy
-    with open("Problem1/current_strategy.json") as json_file:
-        curr_strat = json.load(json_file)
-    env_name = curr_strat['env_name']
-    mdl_name = curr_strat['mdl_name']
-    delta_q = curr_strat['delta_q']
-    k = curr_strat['k']
-    rrt_strat = curr_strat['rrt_strategy']
 
     # Area setup for visualisation
     canvas_width = 800
@@ -123,7 +132,7 @@ if __name__ == "__main__":
         print('Invalid model name, exiting')
         sys.exit(0)
     for pos in pos_goal:
-        goal = Goal(pos, win)
+        goals.append(Goal(pos, win))
 
     # Generate paths and run environment
     env = Environment(obstacles, bounding_poly, players, goals, win, quick_draw=True)
