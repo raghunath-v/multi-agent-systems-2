@@ -27,8 +27,8 @@ class Map :
 
         self.agent_form_positions = [Agent_Position() for x in range(0, self.parameters.nr_agents)]
         for i in range(0, self.parameters.nr_agents):
-            self.agent_positions[i].x = self.parameters.formation_positions[i][0]
-            self.agent_positions[i].y = self.parameters.formation_positions[i][1]
+            self.agent_positions[i].x = self.parameters.start_positions[i][0]
+            self.agent_positions[i].y = self.parameters.start_positions[i][1]
 
         self.agent_graphics_points = [Circle(Point(0,0),3) for x in range(0,self.parameters.nr_agents + 1)]
         self.agent_graphics_points[10] = Circle(Point(0,0),5) #Text(Point(0,0), "R")
