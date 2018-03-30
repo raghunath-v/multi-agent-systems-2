@@ -1,7 +1,7 @@
 import math as math
 
 class Agent :
-    def __init__(self, identity, goal):
+    def __init__(self, identity, goal, rad=0.5):
         self.id = identity
         self.a_x = 0
         self.a_y = 0
@@ -12,7 +12,7 @@ class Agent :
         self.dir_x = 0
         self.dir_y = 0
         self.allowed_velocities = []
-        self.radius = 3
+        self.radius = rad
         self.goal_x = goal[0]
         self.goal_y = goal[1]
         self.goal_reached = False

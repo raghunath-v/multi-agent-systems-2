@@ -1,5 +1,7 @@
 from graphics import *
+import math as math
 from g_tools import gen_point_list,scale_points
+from Agent import Agent
 
 
 class Bounding:
@@ -42,6 +44,18 @@ class Obstacle:
     def __init__(self, bounding_poly):
         self.bounding_poly = bounding_poly
         self.nr_corners = len(bounding_poly)
+        # Get dummy agent
+        centroid = [0, 0]
+        for i in range(0, self.nr_corners):
+            centroid = [centroid[0] + self.bounding_poly[i][0], centroid[1] + self.bounding_poly[i][1]]
+        centroid = [centroid[0] / self.nr_corners, centroid[1] / self.nr_corners]
+        max_rad = 0
+        for i in range(0, self.nr_corners):
+            dist = math.sqrt((centroid[0] - self.bounding_poly[i][0]) ** 2 +
+                             (centroid[1] - self.bounding_poly[i][1]) ** 2)
+            if dist > max_rad:
+                max_rad = dist
+        self.dummy_agent = Agent(1000, centroid, max_rad)
 
     def draw_obstacle(self,win,graphics_scale,grapchis_add):
         j = self.nr_corners - 1
@@ -54,6 +68,7 @@ class Obstacle:
             line = Line(p1,p2)
             line.setFill('blue')
             line.draw(win)
+
 
 
 class Parameters:

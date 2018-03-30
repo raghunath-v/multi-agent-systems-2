@@ -24,6 +24,10 @@ class Map:
         self.agent_graphics_points = [Circle(Point(0,0),3) for x in range(0,self.parameters.nr_agents)]
         self.draw_agent_positions()
 
+        #self.circular_obs = [Circle(Point(0,0),self.parameters.obstacles[x].dummy_agent.radius)
+        #                 for x in range(0,len(self.parameters.obstacles))]
+        #self.draw_obstacle_circles()
+
         # color_vec = ['red','green','blue','yellow','black','cyan','magenta']
         color_vec = get_N_HexCol(self.parameters.nr_agents)
         step = len(colors.cnames)
@@ -103,6 +107,16 @@ class Map:
 
             self.agent_graphics_points[i].move(dx_i,dy_i)
 
+    def draw_obstacle_circles(self):
+        for i in range(0,len(self.parameters.obstacles)):
+            old_x_i = self.parameters.obstacles[i].dummy_agent.x
+            old_y_i = self.parameters.obstacles[i].dummy_agent.y
+
+            dx_i = self.agents[i].x * self.parameters.graphics_scale + self.parameters.graphics_add - old_x_i
+            dy_i = self.agents[i].y * self.parameters.graphics_scale + self.parameters.graphics_add - old_y_i
+
+            self.agent_graphics_points[i].move(dx_i,dy_i)
+
     def get_best_velocity(self,agent):
         velocities = agent.discrete_velocities(self.discrete_div)
         for i in range(0, self.parameters.nr_agents):
@@ -135,8 +149,30 @@ class Map:
                         bound_left = [math.cos(theta_ort_left), math.sin(theta_ort_left)]
                         theta_ort_right = theta - theta_ort
                         bound_right = [math.cos(theta_ort_right), math.sin(theta_ort_right)]
+                        # use Hybrid RVO
+                        # dist_dif = distance([0.5*(agentB.v_x-agentA.v_x),0.5*(agentB.v_y-agentA.v_y)],[0,0])
+                        # transl_vB_vA = [agentA.x+agentB.v_x+math.cos(theta_ort_left)*dist_dif,
+                        #                agentA.y+agentB.v_y+math.sin(theta_ort_left)*dist_dif]
                         RVO = [transl_vB_vA, bound_left, bound_right, dist, min_dist]
                         RVO_all.append(RVO)
+                """
+                for obs in self.parameters.obstacles:
+                    # hole = [x, y, rad]
+                    agentB = obs.dummy_agent
+                    transl_vB_vA = [agentA.x + agentB.v_x, agentA.y + agentB.v_y]
+                    dist = agentA.dist_to(agentB)
+                    min_dist = agentA.radius + agentB.radius
+                    theta = agentA.angle_to(agentB)
+                    if dist < min_dist:
+                        dist = min_dist
+                    theta_ort = math.asin(min_dist / dist)
+                    theta_ort_left = theta + theta_ort
+                    bound_left = [math.cos(theta_ort_left), math.sin(theta_ort_left)]
+                    theta_ort_right = theta - theta_ort
+                    bound_right = [math.cos(theta_ort_right), math.sin(theta_ort_right)]
+                    RVO = [transl_vB_vA, bound_left, bound_right, dist, min_dist]
+                    RVO_all.append(RVO)
+                """
                 new_vel = intersect(agentA, RVO_all)
                 self.agents[i].v_x = new_vel[0]
                 self.agents[i].v_y = new_vel[1]

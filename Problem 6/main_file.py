@@ -9,7 +9,7 @@ import random
 def main_function() :
     random.seed(0)
 
-    with open("P26.json") as json_file:
+    with open("P26_X.json") as json_file:
         desc = json.load(json_file)
 
     bounding_poly_positions = desc['bounding_polygon']
@@ -28,6 +28,7 @@ def main_function() :
     graphics_add = 20
 
     win = GraphWin("map",400,700)
+    win.yUp()
 
     parameters = Parameters(bounding_poly_positions,formation_positions,start_positions,dt,v_max,a_max,graphics_scale,graphics_add)
 

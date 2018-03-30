@@ -9,9 +9,9 @@ import random
 def main_function() :
     random.seed(0)
 
-    N = 18
+    N = 36
 
-    with open("P21.json") as json_file:
+    with open("P21_X.json") as json_file:
         desc = json.load(json_file)
 
     bounding_poly_positions = desc['bounding_polygon']
@@ -29,10 +29,11 @@ def main_function() :
 
     #traj_vec = list(zip(desc['x'],desc['y'],desc['theta']))
 
-    graphics_scale = 5
-    graphics_add = 20
+    graphics_scale = 10
+    graphics_add = 50
 
-    win = GraphWin("map",400,700)
+    win = GraphWin("map",400,500)
+    win.yUp()
 
     parameters = Parameters(bounding_poly_positions,obstacles,start_positions,goal_positions,dt,v_max,a_max,graphics_scale,graphics_add)
 
